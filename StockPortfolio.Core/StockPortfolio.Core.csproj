@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\AlphaVantageApiClients\Overview\" />
+    <Folder Include="Features\AlphaVantageApiClients\NewsSentiment\" />
+    <Folder Include="Features\IntradayPrices\GetIntradayPrices\" />
+    <Folder Include="Features\IntradayPrices\CreateIntradayPrice\" />
+    <Folder Include="Features\IntradayPrices\DeleteIntradayPrice\" />
+    <Folder Include="Features\IntradayPrices\UpdateIntradayPrice\" />
+    <Folder Include="Features\Securities\CreateSecurity\" />
+    <Folder Include="Features\Securities\DeleteSecurity\" />
+    <Folder Include="Features\Securities\UpdateSecurity\" />
+    <Folder Include="Features\SharePrices\GetSharePrices\" />
+    <Folder Include="Features\SharePrices\CreateSharePrice\" />
+    <Folder Include="Features\SharePrices\DeleteSharePrice\" />
+    <Folder Include="Features\SharePrices\UpdateSharePrice\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

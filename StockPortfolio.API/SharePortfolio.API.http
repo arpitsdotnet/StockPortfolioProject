@@ -1,0 +1,6 @@
+@SharePortfolio.API_HostAddress = http://localhost:5009
+
+GET {{SharePortfolio.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
