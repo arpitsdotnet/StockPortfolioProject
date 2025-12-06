@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using StockPortfolio.Core.Contracts;
-using StockPortfolio.Core.Features.AlphaVantageApiClients;
-using StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
+using StockPortfolio.API.ServiceCollectionExtensions;
 using StockPortfolio.Core.Services.DbContexts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddScoped<IStockApiClient, AlphaVantageApiClientService>();
-
-builder.Services.AddTransient<SymbolSearchHandler>();
-builder.Services.AddTransient<TimeSeriesIntradayHandler>();
-builder.Services.AddTransient<TimeSeriesDailyHandler>();
+builder.Services.AddAlphaVantageApiClientService();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -41,3 +35,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
