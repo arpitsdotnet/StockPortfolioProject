@@ -5,12 +5,12 @@ using StockPortfolio.Core.Contracts;
 
 namespace StockPortfolio.Core.Features.AlphaVantageApiClients;
 
-public class AlphaVantageApiClientHandler : IStockApiClient
+public class AlphaVantageApiClientService : IStockApiClient
 {
     private const string _BaseUrl = "https://www.alphavantage.co/";
     private readonly HttpClient _httpClient;
 
-    public AlphaVantageApiClientHandler(HttpClient httpClient)
+    public AlphaVantageApiClientService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }

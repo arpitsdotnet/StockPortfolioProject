@@ -1,11 +1,6 @@
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using StockPortfolio.Core.BaseModels;
-using StockPortfolio.Core.Contracts;
-using StockPortfolio.Core.Domain;
-using StockPortfolio.Core.Features.AlphaVantageApiClients.SymbolSearch;
-using StockPortfolio.Core.Features.AlphaVantageApiClients.TimeSeriesDaily;
-using StockPortfolio.Core.Features.AlphaVantageApiClients.TimeSeriesIntraday;
+using StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 using StockPortfolio.Core.Services.DbContexts;
 
 namespace StockPortfolio.API.Controllers;

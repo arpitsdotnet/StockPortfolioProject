@@ -2,7 +2,7 @@
 using StockPortfolio.Core.BaseModels;
 using StockPortfolio.Core.Contracts;
 
-namespace StockPortfolio.Core.Features.AlphaVantageApiClients.SymbolSearch;
+namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 
 public sealed record SymbolSearchRequest(string Keywords);
 public sealed record SymbolSearchResponse(string? Symbol, string? Name, string? Exchange, string? Type, string? Currency);

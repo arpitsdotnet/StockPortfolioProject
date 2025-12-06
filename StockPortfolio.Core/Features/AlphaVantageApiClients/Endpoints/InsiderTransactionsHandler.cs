@@ -2,17 +2,17 @@
 using StockPortfolio.Core.BaseModels;
 using StockPortfolio.Core.Contracts;
 
-namespace StockPortfolio.Core.Features.AlphaVantageApiClients.InsiderTransactions;
+namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 
 public sealed record InsiderTransactionsRequest(string Symbol);
 public sealed record InsiderTransactionsResponse(string Symbol);
 public class InsiderTransactionsHandler
 {
-    private readonly IStockApiClient _alphaVantageApiClient;
+    private readonly IStockApiClient _stockApiClient;
 
-    public InsiderTransactionsHandler(IStockApiClient alphaVantageApiClient)
+    public InsiderTransactionsHandler(IStockApiClient stockApiClient)
     {
-        _alphaVantageApiClient = alphaVantageApiClient;
+        _stockApiClient = stockApiClient;
     }
     public async Task<Result<InsiderTransactionsResponse>> Handle(InsiderTransactionsRequest request, CancellationToken cancellationToken)
     {
@@ -32,7 +32,7 @@ public class InsiderTransactionsHandler
             $"function={AlphaVantageApiConstants.Functions.INSIDER_TRANSACTIONS}&" +
             $"symbol={request.Symbol}";
 
-        var response = await _alphaVantageApiClient.Query<InsiderTransactionsResponse>(query, cancellationToken);
+        var response = await _stockApiClient.Query<InsiderTransactionsResponse>(query, cancellationToken);
 
         return response;
     }

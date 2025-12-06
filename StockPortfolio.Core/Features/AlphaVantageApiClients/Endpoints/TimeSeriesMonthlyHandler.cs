@@ -3,7 +3,7 @@ using StockPortfolio.Core.BaseModels;
 using StockPortfolio.Core.Contracts;
 using StockPortfolio.Core.Features.AlphaVantageApiClients.Models;
 
-namespace StockPortfolio.Core.Features.AlphaVantageApiClients.TimeSeriesMonthly;
+namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 
 public sealed record TimeSeriesMonthlyRequest(string Symbol, string Month);
 public sealed record TimeSeriesMonthlyResponse(string SeriesDateTime, decimal Open, decimal High, decimal Low, decimal Close, long Volumne);
