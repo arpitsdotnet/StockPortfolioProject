@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockPortfolio.Core", "Stoc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockPortfolio.API", "StockPortfolio.API\StockPortfolio.API.csproj", "{5C9E12D9-B21D-4A10-B9F0-AA505796B1BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockPortfolio.WebUI", "StockPortfolio.WebUI\StockPortfolio.WebUI.csproj", "{AB893FAA-BEED-4082-AAE9-C4FB9ABFBA9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5C9E12D9-B21D-4A10-B9F0-AA505796B1BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C9E12D9-B21D-4A10-B9F0-AA505796B1BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C9E12D9-B21D-4A10-B9F0-AA505796B1BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB893FAA-BEED-4082-AAE9-C4FB9ABFBA9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB893FAA-BEED-4082-AAE9-C4FB9ABFBA9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB893FAA-BEED-4082-AAE9-C4FB9ABFBA9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB893FAA-BEED-4082-AAE9-C4FB9ABFBA9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

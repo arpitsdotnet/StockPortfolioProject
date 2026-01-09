@@ -1,0 +1,74 @@
+﻿@page
+@model StockPortfolio.WebUI.Pages.Stocks.IndexModel
+@{
+    ViewData["Title"] = "Stock Securities";
+}
+
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"> Stock Securities</h5>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @Model.ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        <div class="card-body p-0">
+            <div class="row p-3">
+                <div class="col-md-4">
+                    <input type="text"
+                           id="stockSearch"
+                           class="form-control"
+                           placeholder="Search by Symbol or Name..." />
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Name</th>
+                        <th class="text-end">Price</th>
+                        <th class="text-end">Change</th>
+                        <th class="text-end">% Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Securities.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-3">
+                                No securities available
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var stock in Model.Securities)
+                        {
+                            var css = stock.Change >= 0 ? "text-success" : "text-danger";
+
+                            <tr>
+                                <td>@stock.Symbol</td>
+                                <td>@stock.Name</td>
+                                <td class="text-end">@stock.LastPrice.ToString("N2")</td>
+                                <td class="text-end @css">
+                                    @stock.Change.ToString("N2")
+                                </td>
+                                <td class="text-end @css">
+                                    @stock.ChangePercent.ToString("N2")%
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
