@@ -25,9 +25,9 @@ public class SecurityController : ControllerBase
     [HttpGet(Name = "GetSecurityByKeywords")]
     public async Task<Result<List<TimeSeriesDailyResponse>>> GetSecurityByKeywords(string keywords, CancellationToken cancellationToken)
     {
-        TimeSeriesDailyRequest request = new(keywords);
+        _logger.LogInformation("{MethodName} method insert.", nameof(GetSecurityByKeywords));
 
-        Result<List<TimeSeriesDailyResponse>> response = await _symbolSearchHandler.Handle(request, cancellationToken);
+        Result<List<TimeSeriesDailyResponse>> response = await _symbolSearchHandler.Handle(new TimeSeriesDailyRequest(keywords), cancellationToken);
 
         //List<string?> symbols = _context.Securities.Where(x => x.IsActive == true).Select(x => x.Symbol).ToList();
 
