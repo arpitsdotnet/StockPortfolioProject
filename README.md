@@ -104,7 +104,7 @@ StockPortfolio
 ---
 
 ## 👨‍💻 Author
-**Arpit Shrivastava**  
+**Arpit**  
 Senior .NET Backend Developer
 
 ---
