@@ -3,19 +3,19 @@ using StockPortfolio.Core.BaseModels;
 using StockPortfolio.Core.Domain;
 using StockPortfolio.Core.Services.DbContexts;
 
-namespace StockPortfolio.Core.Features.Securities.GetSecurities;
+namespace StockPortfolio.Core.Features.Securities.GetSecuritiesByApi;
 
-public sealed record GetSecuritiesRequest(string Keywords, string SecurityType, string Industry);
-public sealed record GetSecuritiesResponse(int SecurityId, string Symbol, string Name, string Exchange, string SecurityType, string Currency, string ISIN, string Sector, string Industry);
-public class GetSecuritiesHandler
+public sealed record GetSecuritiesByApiRequest(string Keywords, string SecurityType, string Industry);
+public sealed record GetSecuritiesByApiResponse(int SecurityId, string Symbol, string Name, string Exchange, string SecurityType, string Currency, string ISIN, string Sector, string Industry);
+public class GetSecuritiesByApiHandler
 {
     private readonly ApplicationDbContext _context;
 
-    public GetSecuritiesHandler(ApplicationDbContext context)
+    public GetSecuritiesByApiHandler(ApplicationDbContext context)
     {
         _context = context;
     }
-    public async Task<Result<List<GetSecuritiesResponse>>> Handle(GetSecuritiesRequest request, CancellationToken cancellationToken)
+    public async Task<Result<List<GetSecuritiesByApiResponse>>> Handle(GetSecuritiesByApiRequest request, CancellationToken cancellationToken)
     {
         IQueryable<Security> securityQuery = _context.Securities.Where(x => x.IsActive == true);
 
@@ -42,11 +42,11 @@ public class GetSecuritiesHandler
             return new Error(ErrorType.VALIDATION, ErrorCode.NOT_FOUND, "No security record found.");
         }
 
-        List<GetSecuritiesResponse> dataList = new();
+        List<GetSecuritiesByApiResponse> dataList = new();
 
         foreach (var item in securities)
         {
-            dataList.Add(new GetSecuritiesResponse(
+            dataList.Add(new GetSecuritiesByApiResponse(
                 SecurityId: item.SecurityId,
                 Symbol: item.Symbol,
                 Name: item.Name,
@@ -59,6 +59,6 @@ public class GetSecuritiesHandler
             ));
         }
 
-        return Result<List<GetSecuritiesResponse>>.Success(dataList);
+        return Result<List<GetSecuritiesByApiResponse>>.Success(dataList);
     }
 }
