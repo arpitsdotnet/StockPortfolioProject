@@ -8,15 +8,8 @@ namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 public sealed record TimeSeriesWeeklyRequest(string Symbol, string Month);
 public sealed record TimeSeriesWeeklyResponse(string SeriesDateTime, decimal Open, decimal High, decimal Low, decimal Close, long Volumne);
 
-public class TimeSeriesWeeklyHandler
+public class TimeSeriesWeeklyHandler(IStockApiClient stockApiClient)
 {
-    private readonly IStockApiClient _stockApiClient;
-
-    public TimeSeriesWeeklyHandler(IStockApiClient stockApiClient)
-    {
-        _stockApiClient = stockApiClient;
-    }
-
     public async Task<Result<List<TimeSeriesWeeklyResponse>>> Handle(TimeSeriesWeeklyRequest request, CancellationToken cancellationToken)
     {
         if (request == null)
@@ -30,7 +23,7 @@ public class TimeSeriesWeeklyHandler
             $"symbol={request.Symbol}&" +
             $"month={request.Month}";
 
-        var apiResponse = await _stockApiClient.Query<TimeSeriesWeeklyResponse_Body>(query, cancellationToken);
+        var apiResponse = await stockApiClient.Query<TimeSeriesWeeklyResponse_Body>(query, cancellationToken);
         if (apiResponse.IsFailure)
         {
             return apiResponse.Error;
@@ -48,14 +41,14 @@ public class TimeSeriesWeeklyHandler
     internal class TimeSeriesWeeklyResponse_Body
     {
         [JsonPropertyName("Meta Data")]
-        public TimeSeries_MetaDataResponse MetaData { get; set; }
+        public TimeSeries_MetaDataResponse? MetaData { get; set; }
 
         [JsonPropertyName("Weekly Time Series")]
-        public Dictionary<string, TimeSeries_ItemResponse> TimeSeriesWeekly { get; set; }
+        public Dictionary<string, TimeSeries_ItemResponse>? TimeSeriesWeekly { get; set; }
 
-        public List<TimeSeriesWeeklyResponse> GetTimeSeriesItemList() => [.. GetTimeSeriesItemListFromDict(TimeSeriesWeekly)];
+        public List<TimeSeriesWeeklyResponse> GetTimeSeriesItemList() => [.. GetTimeSeriesItemListFromDict(TimeSeriesWeekly!)];
 
-        private IEnumerable<TimeSeriesWeeklyResponse> GetTimeSeriesItemListFromDict(Dictionary<string, TimeSeries_ItemResponse> apiResponseDict) =>
+        private static IEnumerable<TimeSeriesWeeklyResponse> GetTimeSeriesItemListFromDict(Dictionary<string, TimeSeries_ItemResponse> apiResponseDict) =>
             apiResponseDict.Select(item =>
             new TimeSeriesWeeklyResponse(
                 item.Key,

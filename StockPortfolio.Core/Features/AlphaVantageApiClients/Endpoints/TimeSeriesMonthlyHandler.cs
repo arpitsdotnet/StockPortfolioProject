@@ -8,15 +8,8 @@ namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 public sealed record TimeSeriesMonthlyRequest(string Symbol, string Month);
 public sealed record TimeSeriesMonthlyResponse(string SeriesDateTime, decimal Open, decimal High, decimal Low, decimal Close, long Volumne);
 
-public class TimeSeriesMonthlyHandler
+public class TimeSeriesMonthlyHandler(IStockApiClient stockApiClient)
 {
-    private readonly IStockApiClient _stockApiClient;
-
-    public TimeSeriesMonthlyHandler(IStockApiClient stockApiClient)
-    {
-        _stockApiClient = stockApiClient;
-    }
-
     public async Task<Result<List<TimeSeriesMonthlyResponse>>> Handle(TimeSeriesMonthlyRequest request, CancellationToken cancellationToken)
     {
         if (request == null)
@@ -30,7 +23,7 @@ public class TimeSeriesMonthlyHandler
             $"symbol={request.Symbol}&" +
             $"month={request.Month}";
 
-        var apiResponse = await _stockApiClient.Query<TimeSeriesMonthlyResponse_Body>(query, cancellationToken);
+        var apiResponse = await stockApiClient.Query<TimeSeriesMonthlyResponse_Body>(query, cancellationToken);
         if (apiResponse.IsFailure)
         {
             return apiResponse.Error;
@@ -48,14 +41,14 @@ public class TimeSeriesMonthlyHandler
     internal class TimeSeriesMonthlyResponse_Body
     {
         [JsonPropertyName("Meta Data")]
-        public TimeSeries_MetaDataResponse MetaData { get; set; }
+        public TimeSeries_MetaDataResponse? MetaData { get; set; }
 
         [JsonPropertyName("Monthly Time Series")]
-        public Dictionary<string, TimeSeries_ItemResponse> TimeSeriesMonthly { get; set; }
+        public Dictionary<string, TimeSeries_ItemResponse>? TimeSeriesMonthly { get; set; }
 
-        public List<TimeSeriesMonthlyResponse> GetTimeSeriesItemList() => [.. GetTimeSeriesItemListFromDict(TimeSeriesMonthly)];
+        public List<TimeSeriesMonthlyResponse> GetTimeSeriesItemList() => [.. GetTimeSeriesItemListFromDict(TimeSeriesMonthly!)];
 
-        private IEnumerable<TimeSeriesMonthlyResponse> GetTimeSeriesItemListFromDict(Dictionary<string, TimeSeries_ItemResponse> apiResponseDict) =>
+        private static IEnumerable<TimeSeriesMonthlyResponse> GetTimeSeriesItemListFromDict(Dictionary<string, TimeSeries_ItemResponse> apiResponseDict) =>
             apiResponseDict.Select(item =>
             new TimeSeriesMonthlyResponse(
                 item.Key,

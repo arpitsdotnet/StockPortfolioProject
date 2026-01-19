@@ -6,18 +6,12 @@ using StockPortfolio.Core.Services.DbContexts;
 namespace StockPortfolio.Core.Features.Securities.GetSecurities;
 
 public sealed record GetSecuritiesRequest(string Keywords, string SecurityType, string Industry);
-public sealed record GetSecuritiesResponse(int SecurityId, string Symbol, string Name, string Exchange, string SecurityType, string Currency, string ISIN, string Sector, string Industry);
-public class GetSecuritiesHandler
+public sealed record GetSecuritiesResponse(int SecurityId, string? Symbol, string? Name, string? Exchange, string? SecurityType, string? Currency, string? ISIN, string? Sector, string? Industry);
+public class GetSecuritiesHandler(ApplicationDbContext context)
 {
-    private readonly ApplicationDbContext _context;
-
-    public GetSecuritiesHandler(ApplicationDbContext context)
-    {
-        _context = context;
-    }
     public async Task<Result<List<GetSecuritiesResponse>>> Handle(GetSecuritiesRequest request, CancellationToken cancellationToken)
     {
-        IQueryable<Security> securityQuery = _context.Securities.Where(x => x.IsActive == true);
+        IQueryable<Security> securityQuery = context.Securities.Where(x => x.IsActive == true);
 
         if (string.IsNullOrWhiteSpace(request.Keywords) == false)
         {

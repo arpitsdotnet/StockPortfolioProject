@@ -5,19 +5,13 @@ using StockPortfolio.Core.Services.DbContexts;
 
 namespace StockPortfolio.Core.Features.Securities.GetSecuritiesByApi;
 
-public sealed record GetSecuritiesByApiRequest(string Keywords, string SecurityType, string Industry);
-public sealed record GetSecuritiesByApiResponse(int SecurityId, string Symbol, string Name, string Exchange, string SecurityType, string Currency, string ISIN, string Sector, string Industry);
-public class GetSecuritiesByApiHandler
+public sealed record GetSecuritiesByApiRequest(string? Keywords, string? SecurityType, string? Industry);
+public sealed record GetSecuritiesByApiResponse(int SecurityId, string? Symbol, string? Name, string? Exchange, string? SecurityType, string? Currency, string? ISIN, string? Sector, string? Industry);
+public class GetSecuritiesByApiHandler(ApplicationDbContext context)
 {
-    private readonly ApplicationDbContext _context;
-
-    public GetSecuritiesByApiHandler(ApplicationDbContext context)
-    {
-        _context = context;
-    }
     public async Task<Result<List<GetSecuritiesByApiResponse>>> Handle(GetSecuritiesByApiRequest request, CancellationToken cancellationToken)
     {
-        IQueryable<Security> securityQuery = _context.Securities.Where(x => x.IsActive == true);
+        IQueryable<Security> securityQuery = context.Securities.Where(x => x.IsActive == true);
 
         if (string.IsNullOrWhiteSpace(request.Keywords) == false)
         {
