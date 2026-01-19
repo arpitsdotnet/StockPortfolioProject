@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StockPortfolio.Core.BaseModels;
-using StockPortfolio.Core.Domain;
+using StockPortfolio.Core.Features.Securities.Domain.Models;
 using StockPortfolio.Core.Services.DbContexts;
 
 namespace StockPortfolio.Core.Features.Securities.GetSecuritiesByApi;

@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddHttpClient<IStockPortfolioApiClient, StockPortfolioApiService>(client =>
+builder.Services.AddHttpClient<ISecurityStockPortfolioApiClient, SecurityStockPortfolioApiService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7060/api/");
     client.Timeout = TimeSpan.FromSeconds(30);

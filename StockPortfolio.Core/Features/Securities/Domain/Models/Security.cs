@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using StockPortfolio.Core.BaseModels;
 
-namespace StockPortfolio.Core.Domain;
+namespace StockPortfolio.Core.Features.Securities.Domain.Models;
 public class Security : BaseDomain
 {
     [Key]

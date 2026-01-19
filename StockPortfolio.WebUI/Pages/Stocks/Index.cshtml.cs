@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using StockPortfolio.WebUI.Models;
+using StockPortfolio.WebUI.Models.BaseModels;
 using StockPortfolio.WebUI.Services;
 
 namespace StockPortfolio.WebUI.Pages.Stocks;
@@ -7,13 +8,13 @@ namespace StockPortfolio.WebUI.Pages.Stocks;
 public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
-    private readonly IStockPortfolioApiClient _stockApiService;
+    private readonly ISecurityStockPortfolioApiClient _stockPortfolioApiService;
 
     public IndexModel(
         ILogger<IndexModel> logger,
-        IStockPortfolioApiClient stockApiService)
+        ISecurityStockPortfolioApiClient stockPortfolioApiService)
     {
-        _stockApiService = stockApiService;
+        _stockPortfolioApiService = stockPortfolioApiService;
         _logger = logger;
     }
 
@@ -27,7 +28,9 @@ public class IndexModel : PageModel
         _logger.LogInformation("Fetching stock securities started.");
         try
         {
-            Securities = await _stockApiService.GetSecuritiesAsync();
+            PageSetting pageSetting = new();
+
+            Securities = await _stockPortfolioApiService.SearchAsync(pageSetting);
 
             _logger.LogInformation("Successfully fetched {Count} stock securities.",
                 Securities.Count);

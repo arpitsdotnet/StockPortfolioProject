@@ -3,20 +3,20 @@ using StockPortfolio.WebUI.Models.BaseModels;
 
 namespace StockPortfolio.WebUI.Services;
 
-public class StockPortfolioApiService : IStockPortfolioApiClient
+public class SecurityStockPortfolioApiService : ISecurityStockPortfolioApiClient
 {
     private readonly HttpClient _httpClient;
 
-    public StockPortfolioApiService(HttpClient httpClient)
+    public SecurityStockPortfolioApiService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
 
-    public async Task<IReadOnlyList<StockSecurity>> GetSecuritiesAsync(int page, int pageSize, string keyword)
+    public async Task<IReadOnlyList<StockSecurity>> SearchAsync(PageSetting pageSetting, string keyword)
     {
         // Example endpoint – replace with real API
         var response = await _httpClient.GetFromJsonAsync<Result<List<StockSecurity>>>(
-            $"stocks?keyword={keyword}&page={page}&pageSize={pageSize}"
+            $"stocks?keyword={keyword}&page={pageSetting.Page}&pageSize={pageSetting.PageSize}"
         );
 
         if (response == null)

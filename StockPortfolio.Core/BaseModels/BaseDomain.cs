@@ -1,4 +1,4 @@
-﻿namespace StockPortfolio.Core.Domain;
+﻿namespace StockPortfolio.Core.BaseModels;
 public abstract class BaseDomain
 {
     public bool IsActive { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace StockPortfolio.Core.Domain;
+﻿namespace StockPortfolio.Core.Features.Securities.Domain.Models;
 public enum SecurityTypes
 {
     Equity = 1,
