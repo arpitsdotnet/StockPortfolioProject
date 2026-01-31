@@ -13,16 +13,16 @@ public class SecurityStockPortfolioApiService(HttpClient httpClient) : ISecurity
     public async Task<IReadOnlyList<StockSecurity>> SearchAsync(PageSetting pageSetting, string keyword)
     {
         // Example endpoint – replace with real API
-        var response = await httpClient.GetFromJsonAsync<Result<List<StockSecurity>>>(
+        var response = await httpClient.GetFromJsonAsync<ResultDto<List<StockSecurity>>>(
             $"stocks?keyword={keyword}&page={pageSetting.Page}&pageSize={pageSetting.PageSize}"
         );
-
+        
         if (response == null)
             throw new ArgumentException("Oops! Something went wrong, we did not receive any response, please contact administration.");
 
-        if (response.IsFailure)
-            throw new ArgumentException(response.Error.Description);
+        if (response.IsSuccess == false)
+            throw new ArgumentException(response.Error?.Description);
 
-        return response.Value;
+        return response.Value!;
     }
 }
