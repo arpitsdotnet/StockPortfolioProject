@@ -7,11 +7,13 @@
             Value = value;
             Message = message;
             IsSuccess = true;
+            Error = null!;
         }
         private Result(Error error)
         {
             Error = error;
             IsSuccess = false;
+            Value = null!;
         }
 
         public bool IsSuccess { get; set; }

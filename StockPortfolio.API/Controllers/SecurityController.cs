@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using StockPortfolio.Core.BaseModels;
 using StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 using StockPortfolio.Core.Services.DbContexts;
+using StockPortfolio.Core.Features.Securities.DeleteSecurity;
 
 namespace StockPortfolio.API.Controllers;
 [ApiController]
@@ -11,15 +12,18 @@ public class SecurityController : ControllerBase
     private readonly ILogger<SecurityController> _logger;
     private readonly TimeSeriesDailyHandler _symbolSearchHandler;
     private readonly ApplicationDbContext _context;
+    private readonly DeleteSecurityHandler _deleteSecurityHandler;
 
     public SecurityController(
         ILogger<SecurityController> logger,
         TimeSeriesDailyHandler symbolSearchHandler,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        DeleteSecurityHandler deleteSecurityHandler)
     {
         _logger = logger;
         _symbolSearchHandler = symbolSearchHandler;
         _context = context;
+        _deleteSecurityHandler = deleteSecurityHandler;
     }
 
     [HttpGet(Name = "GetSecurityByKeywords")]
@@ -29,25 +33,21 @@ public class SecurityController : ControllerBase
 
         Result<List<TimeSeriesDailyResponse>> response = await _symbolSearchHandler.Handle(new TimeSeriesDailyRequest(keywords), cancellationToken);
 
-        //List<string?> symbols = _context.Securities.Where(x => x.IsActive == true).Select(x => x.Symbol).ToList();
-
-        //var securities = (from item in response.Value
-        //                  where symbols.Contains(item.Symbol) == false
-        //                  select new Security
-        //                  {
-        //                      Symbol = item.Symbol,
-        //                      Name = item.Name,
-        //                      Exchange = item.Exchange,
-        //                      SecurityType = item.Type,
-        //                      Currency = item.Currency,
-        //                      IsActive = true,
-        //                      CreatedById = 1,
-        //                      CreatedOn = DateTime.Now
-        //                  }).ToList();
-
-        //await _context.Securities.AddRangeAsync(securities);
-        //await _context.SaveChangesAsync();
-
         return response;
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Delete security called for id {Id}", id);
+
+        var result = await _deleteSecurityHandler.Handle(new DeleteSecurityRequest(id), cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return NotFound(new ResultDto<object> { IsSuccess = false, Error = new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "Security not found") });
+        }
+
+        return Ok(new ResultDto<object> { IsSuccess = true, Value = null, Message = "Deleted" });
     }
 }

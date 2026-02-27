@@ -15,7 +15,7 @@ This project is created for **learning and portfolio purposes** and is not assoc
 - Enable or disable symbols
 
 ### 2️⃣ Daily Stock Price Management
-- Fetch daily stock prices using Alpha Vantage API
+- Fetch daily stock prices using Alpha Vantage API and Save into DB
 - Store Open, High, Low, Close, and Volume data
 - Support for scheduled or automated daily data sync
 

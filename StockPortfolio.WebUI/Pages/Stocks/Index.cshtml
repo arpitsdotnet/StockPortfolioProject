@@ -7,8 +7,9 @@
 
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0"> Stock Securities</h5>
+            <a asp-page="." asp-route-handler="OpenAdd" class="btn btn-sm btn-primary">Add Security</a>
         </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
@@ -52,7 +53,7 @@
                     {
                         foreach (var stock in Model.Securities)
                         {
-                            var css = stock.Change >= 0 ? "text-success" : "text-danger";
+                            @* var css = stock.Change >= 0 ? "text-success" : "text-danger";
 
                             <tr>
                                 <td>@stock.Symbol</td>
@@ -64,7 +65,7 @@
                                 <td class="text-end @css">
                                     @stock.ChangePercent.ToString("N2")%
                                 </td>
-                            </tr>
+                            </tr> *@
                         }
                     }
                 </tbody>
@@ -72,3 +73,67 @@
         </div>
     </div>
 </div>
+
+@if (Model.ShowModal || Model.SearchResults.Any() || !ViewData.ModelState.IsValid)
+{
+    <div class="modal show d-block" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Security</h5>
+                    <a asp-page="." class="btn-close"></a>
+                </div>
+                <div class="modal-body">
+                    <form method="post" asp-page-handler="Search">
+                        <div class="mb-3">
+                            <label for="SearchKeywords" class="form-label">Search by symbol or name</label>
+                            <div class="input-group">
+                                <input asp-for="SearchKeywords" class="form-control" placeholder="e.g. AAPL" />
+                                <button type="submit" class="btn btn-outline-secondary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@err.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+
+                    @if (Model.SearchResults.Any())
+                    {
+                        <form method="post" asp-page-handler="Create">
+                            <div class="mb-3">
+                                <label class="form-label">Search Results</label>
+                                <select asp-for="SelectedSymbol" class="form-select" onchange="(function(){ var idx=this.selectedIndex; var opt=this.options[idx]; var data = opt.value ? JSON.parse(opt.value) : null; if(data){ document.getElementById('SelectedName').value=data.Name || data.name || ''; document.getElementById('SelectedExchange').value=data.Exchange||data.exchange||''; document.getElementById('SelectedType').value=data.Type||data.type||''; document.getElementById('SelectedCurrency').value=data.Currency||data.currency||''; }})()">
+                                    <option value="">-- select a security --</option>
+                                    @for (int i = 0; i < Model.SearchResults.Count; i++)
+                                    {
+                                        var item = Model.SearchResults[i];
+                                        var json = System.Text.Json.JsonSerializer.Serialize(new { Symbol = item.Symbol, Name = item.Name, Exchange = item.Exchange, Currency = item.Currency });
+                                        <option value="@json">@item.Symbol - @item.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <input type="hidden" asp-for="SelectedName" id="SelectedName" />
+                            <input type="hidden" asp-for="SelectedExchange" id="SelectedExchange" />
+                            <input type="hidden" asp-for="SelectedType" id="SelectedType" />
+                            <input type="hidden" asp-for="SelectedCurrency" id="SelectedCurrency" />
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary" @(string.IsNullOrWhiteSpace(Model.SelectedSymbol) ? "disabled" : "")>Save</button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop show"></div>
+}

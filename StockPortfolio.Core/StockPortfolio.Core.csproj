@@ -19,9 +19,6 @@
     <Folder Include="Features\IntradayPrices\CreateIntradayPrice\" />
     <Folder Include="Features\IntradayPrices\DeleteIntradayPrice\" />
     <Folder Include="Features\IntradayPrices\UpdateIntradayPrice\" />
-    <Folder Include="Features\Securities\CreateSecurity\" />
-    <Folder Include="Features\Securities\DeleteSecurity\" />
-    <Folder Include="Features\Securities\UpdateSecurity\" />
     <Folder Include="Features\SharePrices\GetSharePrices\" />
     <Folder Include="Features\SharePrices\CreateSharePrice\" />
     <Folder Include="Features\SharePrices\DeleteSharePrice\" />
