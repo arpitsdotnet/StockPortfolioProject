@@ -5,6 +5,6 @@ namespace StockPortfolio.WebUI.Services;
 
 public interface ISecurityStockPortfolioApiClient
 {
-    Task<IReadOnlyList<StockSecurity>> AddAsync(string keyword);
-    Task<IReadOnlyList<StockSecurity>> SearchAsync(PageSetting pageSetting, string keyword = "");
+    Task<StockSecurity> AddAsync(StockSecurity stock, CancellationToken cancellationToken);
+    Task<IReadOnlyList<StockSecurity>> SearchAsync(PageSetting pageSetting, string keyword = "", CancellationToken cancellationToken);
 }
