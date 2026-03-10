@@ -14,7 +14,7 @@ using System.Threading;
 using StockPortfolio.Core.UnitTests.TestHelpers;
 using StockPortfolio.Core.Features.AlphaVantageApiClients.Models;
 
-namespace StockPortfolio.Core.UnitTests;
+namespace StockPortfolio.Core.UnitTests.SharePrices;
 
 public class FetchAndStoreSharePricesHandlerTests
 {
@@ -41,7 +41,7 @@ public class FetchAndStoreSharePricesHandlerTests
             }
         };
 
-        var fakeClient = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesDailyHandler.TimeSeriesDailyResponse_Body) ? (object?)body : null);
+        var fakeClient = new FakeStockApiClient((t) => t == typeof(TimeSeriesDailyHandler.TimeSeriesDailyResponse_Body) ? (object)body : null);
         var realDailyHandler = new TimeSeriesDailyHandler(fakeClient);
 
         var handler = new FetchAndStoreSharePricesHandler(context, realDailyHandler);

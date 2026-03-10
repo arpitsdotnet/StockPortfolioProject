@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StockPortfolio.Core.Services.DbContexts;
 using StockPortfolio.Core.Features.Securities.CreateSecurity;
 
-namespace StockPortfolio.Core.UnitTests;
+namespace StockPortfolio.Core.UnitTests.Securities;
 
 public class CreateSecurityHandlerTests
 {
