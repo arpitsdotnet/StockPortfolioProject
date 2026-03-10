@@ -16,6 +16,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddAlphaVantageApiClientService();
 builder.Services.AddSecurityHandlers();
+builder.Services.AddSharePriceHandlers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
