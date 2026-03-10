@@ -37,30 +37,38 @@ public class FetchAndStoreSharePricesHandler
         var items = apiResult.Value;
 
         // Filter by date range
-        var filtered = items.Where(i =>
-        {
-            if (!DateTime.TryParse(i.SeriesDateTime, out var dt)) return false;
-            var date = dt.Date;
-            return date >= request.FromDate.Date && date <= request.ToDate.Date;
-        }).ToList();
+        var filtered = items
+            .Select(i=>
+            {
+                if (!DateTime.TryParse(i.SeriesDateTime, out var dt)) return (Parsed: false, Date: default(DateTime), Item: i);
+                return (Parsed: true, Date: dt.Date, Item: i);
+            })
+            .Where(p => p.Parsed && p.Date >= request.FromDate.Date && p.Date <= request.ToDate.Date)
+            .ToList();
 
         if (!filtered.Any())
             return new ResultDto<int> { IsSuccess = false, Error = new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "No price data found for date range.") };
 
+        var dates = filtered.Select(f => f.Date).Distinct().ToList();
+        var existingHistories = await _context.SharePriceHistories
+            .Where(x => x.SecurityId == request.SecurityId && dates.Contains(x.SeriesDate))
+            .ToListAsync(cancellationToken);
+        var existingByDate = existingHistories.ToDictionary(h => h.SeriesDate, h => h);
+
         // Map to domain and upsert (avoid duplicates)
         int inserted = 0;
-        foreach (var item in filtered)
+        foreach (var f in filtered)
         {
-            DateTime seriesDate = DateTime.Parse(item.SeriesDateTime).Date;
+            var apiItem = f.Item;
+            var seriesDate = f.Date;
 
-            var exists = await _context.SharePriceHistories.FirstOrDefaultAsync(x => x.SecurityId == request.SecurityId && x.SeriesDate == seriesDate, cancellationToken);
-            if (exists != null)
+            if (existingByDate.TryGetValue(seriesDate, out var exists))
             {
-                exists.Open = item.Open;
-                exists.High = item.High;
-                exists.Low = item.Low;
-                exists.Close = item.Close;
-                exists.Volume = item.Volumne;
+                exists.Open = apiItem.Open;
+                exists.High = apiItem.High;
+                exists.Low = apiItem.Low;
+                exists.Close = apiItem.Close;
+                exists.Volume = apiItem.Volumne;
                 exists.LastModifiedOn = DateTime.UtcNow;
                 _context.SharePriceHistories.Update(exists);
             }
@@ -70,11 +78,11 @@ public class FetchAndStoreSharePricesHandler
                 {
                     SecurityId = request.SecurityId,
                     SeriesDate = seriesDate,
-                    Open = item.Open,
-                    High = item.High,
-                    Low = item.Low,
-                    Close = item.Close,
-                    Volume = item.Volumne,
+                    Open = apiItem.Open,
+                    High = apiItem.High,
+                    Low = apiItem.Low,
+                    Close = apiItem.Close,
+                    Volume = apiItem.Volumne,
                     IsActive = true,
                     CreatedOn = DateTime.UtcNow,
                     CreatedById = 0,
