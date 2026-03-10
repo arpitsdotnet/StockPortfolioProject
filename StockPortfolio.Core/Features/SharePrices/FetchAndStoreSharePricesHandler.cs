@@ -56,7 +56,7 @@ public class FetchAndStoreSharePricesHandler
         var existingByDate = existingHistories.ToDictionary(h => h.SeriesDate, h => h);
 
         // Map to domain and upsert (avoid duplicates)
-        int inserted = 0;
+        int inserted = 0, updated = 0;
         foreach (var f in filtered)
         {
             var apiItem = f.Item;
@@ -64,6 +64,7 @@ public class FetchAndStoreSharePricesHandler
 
             if (existingByDate.TryGetValue(seriesDate, out var exists))
             {
+                updated++;
                 exists.Open = apiItem.Open;
                 exists.High = apiItem.High;
                 exists.Low = apiItem.Low;
@@ -74,6 +75,7 @@ public class FetchAndStoreSharePricesHandler
             }
             else
             {
+                inserted++;
                 var entity = new SharePriceHistory
                 {
                     SecurityId = request.SecurityId,
@@ -90,12 +92,11 @@ public class FetchAndStoreSharePricesHandler
                     LastModifiedById = 0
                 };
                 await _context.SharePriceHistories.AddAsync(entity, cancellationToken);
-                inserted++;
             }
         }
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new ResultDto<int> { IsSuccess = true, Value = inserted, Message = $"Inserted/Updated {inserted} records." };
+        return new ResultDto<int> { IsSuccess = true, Value = inserted, Message = $"Inserted {inserted} / Updated {updated} records." };
     }
 }
