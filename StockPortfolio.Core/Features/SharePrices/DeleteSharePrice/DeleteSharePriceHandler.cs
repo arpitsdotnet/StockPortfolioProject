@@ -24,10 +24,10 @@ public class DeleteSharePriceHandler
 
         var entity = await _context.SharePriceHistories.FirstOrDefaultAsync(x => x.SharePriceHistoryId == request.SharePriceHistoryId, cancellationToken);
         if (entity == null)
-            return new Error(ErrorType.VALIDATION, ErrorCode.NOT_FOUND, "Share price record not found.");
+            return new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "Share price record not found.");
 
         if (!entity.IsActive)
-            return Result<DeleteSharePriceResponse>.Success(new DeleteSharePriceResponse(request.SharePriceHistoryId, false), "Share price already inactive.");
+            return Result<DeleteSharePriceResponse>.Success(new DeleteSharePriceResponse(request.SharePriceHistoryId, true), "Share price already inactive.");
 
         entity.IsActive = false;
         entity.LastModifiedOn = DateTime.UtcNow;
@@ -36,6 +36,6 @@ public class DeleteSharePriceHandler
         _context.SharePriceHistories.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result<DeleteSharePriceResponse>.Success(new DeleteSharePriceResponse(request.SharePriceHistoryId, false), "Share price deleted.");
+        return Result<DeleteSharePriceResponse>.Success(new DeleteSharePriceResponse(request.SharePriceHistoryId, true), "Share price deleted.");
     }
 }

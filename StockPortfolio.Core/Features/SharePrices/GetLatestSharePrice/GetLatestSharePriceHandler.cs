@@ -28,7 +28,7 @@ public class GetLatestSharePriceHandler
             .FirstOrDefaultAsync(cancellationToken);
 
         if (latest == null)
-            return new Error(ErrorType.VALIDATION, ErrorCode.NOT_FOUND, "No share price history found for the security.");
+            return new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "No share price history found for the security.");
 
         var resp = new GetLatestSharePriceResponse(latest.SharePriceHistoryId, latest.SeriesDate, latest.Open, latest.High, latest.Low, latest.Close, latest.Volume);
         return Result<GetLatestSharePriceResponse>.Success(resp);
