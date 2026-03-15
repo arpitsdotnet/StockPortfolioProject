@@ -1,13 +1,13 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StockPortfolio.Core.BaseModels;
+using StockPortfolio.Core.Features.Stocks.Domain;
 
 namespace StockPortfolio.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class StocksController : ControllerBase
+public class MockStocksController : ControllerBase
 {
     [HttpGet]
     public ActionResult<ResultDto<List<StockModel>>> Get([FromQuery] int page = 0, int pageSize = 10, string keyword = "")
@@ -34,24 +34,4 @@ public class StocksController : ControllerBase
         model.StockId = 1;
         return Ok(model);
     }
-}
-public class StockModel
-{
-    [JsonPropertyName("StockId")]
-    public int StockId { get; set; } = 0;
-
-    [JsonPropertyName("Symbol")]
-    public string? Symbol { get; set; }
-
-    [JsonPropertyName("Name")]
-    public string? Name { get; set; }
-
-    [JsonPropertyName("LastPrice")]
-    public decimal LastPrice { get; set; }
-
-    [JsonPropertyName("Change")]
-    public decimal Change { get; set; }
-
-    [JsonPropertyName("ChangePercent")]
-    public decimal ChangePercent { get; set; }
 }

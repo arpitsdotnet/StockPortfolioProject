@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using StockPortfolio.Core.BaseModels;
-using StockPortfolio.Core.Features.SharePrices;
 using StockPortfolio.Core.Features.SharePrices.CreateSharePrice;
 using StockPortfolio.Core.Features.SharePrices.DeleteSharePrice;
 using StockPortfolio.Core.Features.SharePrices.GetSharePrices;
 using StockPortfolio.Core.Features.SharePrices.GetLatestSharePrice;
+using StockPortfolio.Core.Features.SharePrices.UpdateSharePrice;
 
 namespace StockPortfolio.API.Controllers;
 

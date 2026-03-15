@@ -5,7 +5,7 @@ using StockPortfolio.Core.Features.Securities.Domain.Models;
 using StockPortfolio.Core.Services.DbContexts;
 using StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 
-namespace StockPortfolio.Core.Features.SharePrices;
+namespace StockPortfolio.Core.Features.SharePrices.UpdateSharePrice;
 
 public sealed record FetchAndStoreSharePricesRequest(int SecurityId, DateTime FromDate, DateTime ToDate);
 
@@ -40,8 +40,8 @@ public class FetchAndStoreSharePricesHandler
         var filtered = items
             .Select(i=>
             {
-                if (!DateTime.TryParse(i.SeriesDateTime, out var dt)) return (Parsed: false, Date: default(DateTime), Item: i);
-                return (Parsed: true, Date: dt.Date, Item: i);
+                if (!DateTime.TryParse(i.SeriesDateTime, out var dt)) return (Parsed: false, Date: default, Item: i);
+                return (Parsed: true, dt.Date, Item: i);
             })
             .Where(p => p.Parsed && p.Date >= request.FromDate.Date && p.Date <= request.ToDate.Date)
             .ToList();

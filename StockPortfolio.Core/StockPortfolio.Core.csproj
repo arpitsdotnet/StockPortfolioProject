@@ -22,7 +22,6 @@
     <Folder Include="Features\SharePrices\GetSharePrices\" />
     <Folder Include="Features\SharePrices\CreateSharePrice\" />
     <Folder Include="Features\SharePrices\DeleteSharePrice\" />
-    <Folder Include="Features\SharePrices\UpdateSharePrice\" />
   </ItemGroup>
 
   <ItemGroup>

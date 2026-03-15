@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StockPortfolio.Core.Features.Securities.CreateSecurity;
 using StockPortfolio.Core.Features.Securities.DeleteSecurity;
 using StockPortfolio.Core.Features.Securities.UpdateSecurity;
-using StockPortfolio.Core.Features.SharePrices;
+using StockPortfolio.Core.Features.SharePrices.UpdateSharePrice;
 
 namespace StockPortfolio.API.ServiceCollectionExtensions;
 
