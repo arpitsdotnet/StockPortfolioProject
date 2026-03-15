@@ -23,7 +23,9 @@ public class AlphaVantageHandlersTests
             }
         };
 
-        var client = new FakeStockApiClient((Type t) => t == typeof(SymbolSearchHandler.SymbolSearchResponse_BestMatches) ? (object?)bestMatches : null);
+        var client = new FakeStockApiClient(
+            (Type t) => t == typeof(SymbolSearchHandler.SymbolSearchResponse_BestMatches) 
+            ? (object?)bestMatches : null);
         var handler = new SymbolSearchHandler(client);
 
         var res = await handler.Handle(new SymbolSearchRequest("test"), CancellationToken.None);

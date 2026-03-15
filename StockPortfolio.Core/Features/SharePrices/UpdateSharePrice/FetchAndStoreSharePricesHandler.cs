@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StockPortfolio.Core.BaseModels;
 using StockPortfolio.Core.Features.SharePrices.Domain.Models;
-using StockPortfolio.Core.Features.Securities.Domain.Models;
 using StockPortfolio.Core.Services.DbContexts;
 using StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 
@@ -20,19 +19,22 @@ public class FetchAndStoreSharePricesHandler
         _timeSeriesDailyHandler = timeSeriesDailyHandler;
     }
 
-    public async Task<ResultDto<int>> Handle(FetchAndStoreSharePricesRequest request, CancellationToken cancellationToken)
+    public async Task<Result<List<SharePriceHistory>>> Handle(FetchAndStoreSharePricesRequest request, CancellationToken cancellationToken)
     {
         if (request == null || request.SecurityId <= 0)
-            return new ResultDto<int> { IsSuccess = false, Error = new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Invalid request") };
+            return Result<List<SharePriceHistory>>
+                .Failure(new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Invalid request"));
 
         var security = await _context.Securities.FirstOrDefaultAsync(s => s.SecurityId == request.SecurityId, cancellationToken);
         if (security == null)
-            return new ResultDto<int> { IsSuccess = false, Error = new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "Security not found.") };
+            return Result<List<SharePriceHistory>>
+                .Failure(new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "Security not found."));
 
         // Fetch daily series via handler
         var apiResult = await _timeSeriesDailyHandler.Handle(new TimeSeriesDailyRequest(security.Symbol!), cancellationToken);
         if (apiResult.IsFailure)
-            return new ResultDto<int> { IsSuccess = false, Error = apiResult.Error };
+            return Result<List<SharePriceHistory>>
+                .Failure(apiResult.Error);
 
         var items = apiResult.Value;
 
@@ -47,7 +49,8 @@ public class FetchAndStoreSharePricesHandler
             .ToList();
 
         if (!filtered.Any())
-            return new ResultDto<int> { IsSuccess = false, Error = new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "No price data found for date range.") };
+            return Result<List<SharePriceHistory>>
+                .Failure(new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "No price data found for date range."));
 
         var dates = filtered.Select(f => f.Date).Distinct().ToList();
         var existingHistories = await _context.SharePriceHistories
@@ -97,6 +100,6 @@ public class FetchAndStoreSharePricesHandler
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new ResultDto<int> { IsSuccess = true, Value = inserted, Message = $"Inserted {inserted} / Updated {updated} records." };
+        return Result<List<SharePriceHistory>>.Success(existingHistories, $"Inserted {inserted} / Updated {updated} records.");
     }
 }

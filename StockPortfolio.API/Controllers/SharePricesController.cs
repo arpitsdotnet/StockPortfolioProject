@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using StockPortfolio.API.Extensions;
 using StockPortfolio.Core.BaseModels;
 using StockPortfolio.Core.Features.SharePrices.CreateSharePrice;
 using StockPortfolio.Core.Features.SharePrices.DeleteSharePrice;
@@ -8,6 +9,7 @@ using StockPortfolio.Core.Features.SharePrices.UpdateSharePrice;
 
 namespace StockPortfolio.API.Controllers;
 
+/// <summary>Handles API endpoints for share price management and external data synchronization.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class SharePricesController : ControllerBase
@@ -32,97 +34,65 @@ public class SharePricesController : ControllerBase
         _getLatestHandler = getLatestHandler;
     }
 
+    /// <summary>Fetches share price data from external API and stores in database.</summary>
     [HttpPost("fetch")]
     public async Task<IActionResult> FetchAndStore([FromBody] FetchAndStoreSharePricesRequest request, CancellationToken cancellationToken)
     {
         if (request == null)
-            return BadRequest(new ResultDto<object> { IsSuccess = false, Error = new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request required") });
+            return Result<FetchAndStoreSharePricesRequest>
+                .Failure(new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request required"))
+                .ToActionResult();
 
         var result = await _fetchHandler.Handle(request, cancellationToken);
-        if (!result.IsSuccess)
-        {
-            return BadRequest(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-        }
-
-        return Ok(new ResultDto<int> { IsSuccess = true, Value = result.Value, Message = result.Message });
+        return result.IsSuccess
+            ? result.ToOkResult()
+            : result.ToActionResult();
     }
 
+    /// <summary>Creates a new share price record.</summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSharePriceRequest request, CancellationToken cancellationToken)
     {
         if (request == null)
-            return BadRequest(new ResultDto<object> { IsSuccess = false, Error = new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request body is required") });
+            return Result<CreateSharePriceResponse>
+                .Failure(new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request body is required"))
+                .ToActionResult();
 
         var result = await _createHandler.Handle(request, cancellationToken);
-        if (result.IsFailure)
-        {
-            var code = result.Error.Code;
-            if (code == ErrorCode.BAD_REQUEST)
-                return BadRequest(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-            if (code == ErrorCode.NOT_FOUND)
-                return NotFound(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-            if (code == ErrorCode.CONFLICT)
-                return Conflict(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-
-            return StatusCode(500, new ResultDto<object> { IsSuccess = false, Error = result.Error });
-        }
-
-        return CreatedAtAction(nameof(GetBySecurity), new { securityId = request.SecurityId }, new ResultDto<object> { IsSuccess = true, Value = result.Value, Message = "Share price created." });
+        return result.IsSuccess
+            ? result.ToCreatedAtActionResult(this, nameof(GetBySecurity), new { securityId = request.SecurityId })
+            : result.ToActionResult();
     }
 
+    /// <summary>Retrieves share prices for a security within optional date range.</summary>
     [HttpGet("{securityId:int}")]
     public async Task<IActionResult> GetBySecurity(int securityId, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, CancellationToken cancellationToken)
     {
         var request = new GetSharePricesRequest(securityId, fromDate, toDate);
         var result = await _getHandler.Handle(request, cancellationToken);
-        if (result.IsFailure)
-        {
-            var code = result.Error.Code;
-            if (code == ErrorCode.BAD_REQUEST)
-                return BadRequest(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-            if (code == ErrorCode.NOT_FOUND)
-                return NotFound(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-
-            return StatusCode(500, new ResultDto<object> { IsSuccess = false, Error = result.Error });
-        }
-
-        return Ok(new ResultDto<object> { IsSuccess = true, Value = result.Value });
+        return result.IsSuccess
+            ? result.ToOkResult()
+            : result.ToActionResult();
     }
 
+    /// <summary>Retrieves the latest share price for a security.</summary>
     [HttpGet("{securityId:int}/latest")]
     public async Task<IActionResult> GetLatest(int securityId, CancellationToken cancellationToken)
     {
         var request = new GetLatestSharePriceRequest(securityId);
         var result = await _getLatestHandler.Handle(request, cancellationToken);
-        if (result.IsFailure)
-        {
-            var code = result.Error.Code;
-            if (code == ErrorCode.BAD_REQUEST)
-                return BadRequest(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-            if (code == ErrorCode.NOT_FOUND)
-                return NotFound(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-
-            return StatusCode(500, new ResultDto<object> { IsSuccess = false, Error = result.Error });
-        }
-
-        return Ok(new ResultDto<object> { IsSuccess = true, Value = result.Value });
+        return result.IsSuccess
+            ? result.ToOkResult()
+            : result.ToActionResult();
     }
 
+    /// <summary>Deletes a share price record by ID.</summary>
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         var result = await _deleteHandler.Handle(new DeleteSharePriceRequest(id), cancellationToken);
-        if (result.IsFailure)
-        {
-            var code = result.Error.Code;
-            if (code == ErrorCode.BAD_REQUEST)
-                return BadRequest(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-            if (code == ErrorCode.NOT_FOUND)
-                return NotFound(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-
-            return StatusCode(500, new ResultDto<object> { IsSuccess = false, Error = result.Error });
-        }
-
-        return Ok(new ResultDto<object> { IsSuccess = true, Value = result.Value, Message = "Deleted" });
+        return result.IsSuccess
+            ? Ok(new ResultDto<object> { IsSuccess = true, Value = result.Value, Message = "Deleted" })
+            : result.ToActionResult();
     }
 }

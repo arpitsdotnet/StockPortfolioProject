@@ -13,6 +13,7 @@ using StockPortfolio.Core.BaseModels;
 using System.Threading;
 using StockPortfolio.Core.UnitTests.TestHelpers;
 using StockPortfolio.Core.Features.AlphaVantageApiClients.Models;
+using StockPortfolio.Core.Features.SharePrices.UpdateSharePrice;
 
 namespace StockPortfolio.Core.UnitTests.SharePrices;
 
@@ -48,10 +49,10 @@ public class FetchAndStoreSharePricesHandlerTests
 
         var request = new FetchAndStoreSharePricesRequest(sec.SecurityId, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1));
 
-        var result = await handler.Handle(request, CancellationToken.None);
+        Result<List<SharePriceHistory>> result = await handler.Handle(request, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(1, result.Value);
+        Assert.Single(result.Value);
 
         var stored = await context.SharePriceHistories.FirstOrDefaultAsync();
         Assert.NotNull(stored);

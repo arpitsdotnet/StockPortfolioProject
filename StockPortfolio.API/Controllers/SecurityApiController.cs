@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using StockPortfolio.API.Extensions;
 using StockPortfolio.Core.BaseModels;
 using StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 using StockPortfolio.Core.Services.DbContexts;
@@ -8,6 +9,7 @@ using StockPortfolio.Core.Features.Securities.CreateSecurity;
 
 namespace StockPortfolio.API.Controllers;
 
+/// <summary>Handles API endpoints for security management and external data search.</summary>
 [ApiController]
 [Route("api/[controller]")]
 public class SecurityApiController : ControllerBase
@@ -35,91 +37,81 @@ public class SecurityApiController : ControllerBase
         _updateSecurityHandler = updateSecurityHandler;
     }
 
+    /// <summary>Searches for securities by keywords using external API.</summary>
     [HttpGet("search")]
     public async Task<Result<List<TimeSeriesDailyResponse>>> GetSecurityByKeywords(string keywords, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{MethodName} method insert.", nameof(GetSecurityByKeywords));
+        _logger.LogInformation("{MethodName} method called with keywords: {Keywords}", nameof(GetSecurityByKeywords), keywords);
 
-        Result<List<TimeSeriesDailyResponse>> response = await _symbolSearchHandler.Handle(new TimeSeriesDailyRequest(keywords), cancellationToken);
-
-        return response;
+        return await _symbolSearchHandler.Handle(new TimeSeriesDailyRequest(keywords), cancellationToken);
     }
 
+    /// <summary>Creates a new security record.</summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSecurityRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Create security called with symbol {Symbol}", request?.Symbol);
 
         if (request == null)
-        {
-            return BadRequest(new ResultDto<object> { IsSuccess = false, Error = new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request body is required") });
-        }
+            return BadRequest(new ResultDto<object> 
+            { 
+                IsSuccess = false, 
+                Error = new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request body is required") 
+            });
 
         var result = await _createSecurityHandler.Handle(request, cancellationToken);
-
-        if (result.IsFailure)
-        {
-            // Map conflict to 409, validation to 400, not found to 404, otherwise 500
-            var code = result.Error.Code;
-            if (code == ErrorCode.CONFLICT)
-                return Conflict(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-
-            if (code == ErrorCode.BAD_REQUEST)
-                return BadRequest(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-
-            return StatusCode(500, new ResultDto<object> { IsSuccess = false, Error = result.Error });
-        }
-
-        return CreatedAtAction(nameof(GetById), new { id = result.Value.SecurityId }, new ResultDto<object> { IsSuccess = true, Value = result.Value, Message = result.Message });
+        return result.IsSuccess
+            ? result.ToCreatedAtActionResult(this, nameof(GetById), new { id = result.Value.SecurityId })
+            : result.ToActionResult();
     }
 
+    /// <summary>Retrieves a security by ID.</summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
         var security = await _context.Securities.FindAsync(new object[] { id }, cancellationToken);
         if (security == null)
-            return NotFound(new ResultDto<object> { IsSuccess = false, Error = new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "Security not found") });
+            return NotFound(new ResultDto<object> 
+            { 
+                IsSuccess = false, 
+                Error = new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "Security not found") 
+            });
 
         return Ok(new ResultDto<object> { IsSuccess = true, Value = security });
     }
 
+    /// <summary>Deletes a security by ID.</summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Delete security called for id {Id}", id);
 
         var result = await _deleteSecurityHandler.Handle(new DeleteSecurityRequest(id), cancellationToken);
-
-        if (result.IsFailure)
-        {
-            return NotFound(new ResultDto<object> { IsSuccess = false, Error = new Error(ErrorType.FAILURE, ErrorCode.NOT_FOUND, "Security not found") });
-        }
-
-        return Ok(new ResultDto<object> { IsSuccess = true, Value = null, Message = "Deleted" });
+        return result.IsSuccess
+            ? Ok(new ResultDto<object> { IsSuccess = true, Value = null, Message = "Deleted" })
+            : result.ToActionResult();
     }
 
+    /// <summary>Updates an existing security record.</summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateSecurityRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Update security called for id {Id}", id);
 
         if (request == null)
-        {
-            return BadRequest(new ResultDto<object> { IsSuccess = false, Error = new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request body is required") });
-        }
+            return BadRequest(new ResultDto<object> 
+            { 
+                IsSuccess = false, 
+                Error = new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request body is required") 
+            });
 
+        // Ensure request ID matches route ID
         if (request.SecurityId != id)
-        {
             request = request with { SecurityId = id };
-        }
 
         var result = await _updateSecurityHandler.Handle(request, cancellationToken);
-
-        if (result.IsFailure)
-        {
-            return NotFound(new ResultDto<object> { IsSuccess = false, Error = result.Error });
-        }
-
-        return Ok(new ResultDto<object> { IsSuccess = true, Value = result.Value, Message = result.Message });
+        return result.IsSuccess
+            ? Ok(new ResultDto<object> { IsSuccess = true, Value = result.Value, Message = "Updated" })
+            : result.ToActionResult();
     }
 }
