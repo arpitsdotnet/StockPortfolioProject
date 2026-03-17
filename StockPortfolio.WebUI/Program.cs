@@ -1,14 +1,17 @@
 using StockPortfolio.WebUI.Services;
+using StockPortfolio.WebUI.Services.Securities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddHttpClient<ISecurityStockPortfolioApiClient, SecurityStockPortfolioApiService>(client =>
+builder.Services.AddHttpClient<IStockPortfolioApiClient, StockPortfolioApiClientService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7060/api/");
     client.Timeout = TimeSpan.FromSeconds(30);
 });
+
+builder.Services.AddTransient<SecurityServices>();
 
 var app = builder.Build();
 

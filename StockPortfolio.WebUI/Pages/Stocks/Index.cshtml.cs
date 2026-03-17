@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using StockPortfolio.WebUI.Models;
 using StockPortfolio.WebUI.Models.BaseModels;
-using StockPortfolio.WebUI.Services;
+using StockPortfolio.WebUI.Services.Securities;
 using System.Net.Http.Json;
 
 namespace StockPortfolio.WebUI.Pages.Stocks;
@@ -10,17 +10,14 @@ namespace StockPortfolio.WebUI.Pages.Stocks;
 public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
-    private readonly ISecurityStockPortfolioApiClient _stockPortfolioApiService;
-    private readonly HttpClient _httpClient;
+    private readonly SecurityServices _securityServices;
 
     public IndexModel(
         ILogger<IndexModel> logger,
-        ISecurityStockPortfolioApiClient stockPortfolioApiService,
-        IHttpClientFactory httpClientFactory)
+        SecurityServices securityServices)
     {
-        _stockPortfolioApiService = stockPortfolioApiService;
         _logger = logger;
-        _httpClient = httpClientFactory.CreateClient();
+        _securityServices = securityServices;
     }
 
     public string? ErrorMessage { get; private set; }
@@ -53,7 +50,7 @@ public class IndexModel : PageModel
         {
             PageSetting pageSetting = new();
 
-            Securities = await _stockPortfolioApiService.SearchAsync(pageSetting, "", default);
+            Securities = await _securityServices.SearchSecurityAsync(pageSetting, "Z", default);
 
             _logger.LogInformation("Successfully fetched {Count} stock securities.",
                 Securities.Count);
@@ -93,7 +90,7 @@ public class IndexModel : PageModel
         try
         {
             PageSetting pageSetting = new();
-            var list = await _stockPortfolioApiService.SearchAsync(pageSetting, SearchKeywords ?? string.Empty, cancellationToken);
+            var list = await _securityServices.SearchSecurityAsync(pageSetting, SearchKeywords ?? string.Empty, cancellationToken);
 
             SearchResults = list.Select(s => StockSecurity.Create(s.Symbol, s.Name, s.Exchange, s.SecurityType, s.Currency)).ToList();
 
@@ -127,24 +124,24 @@ public class IndexModel : PageModel
 
         try
         {
-            var resp = await _httpClient.PostAsJsonAsync("/api/Security", payload, cancellationToken);
+            //var resp = null; // await _securityServices.CreateSecurityAsync("/api/Security", payload, cancellationToken);
 
-            if (resp.StatusCode == System.Net.HttpStatusCode.Conflict)
-            {
-                var body = await resp.Content.ReadFromJsonAsync<ResultDto<object>>(cancellationToken: cancellationToken);
-                ModelState.AddModelError(string.Empty, body?.Error?.Description ?? "A security with this symbol already exists.");
-                return Page();
-            }
+            //if (resp.StatusCode == System.Net.HttpStatusCode.Conflict)
+            //{
+            //    var body = await resp.Content.ReadFromJsonAsync<ResultDto<object>>(cancellationToken: cancellationToken);
+            //    ModelState.AddModelError(string.Empty, body?.Error?.Description ?? "A security with this symbol already exists.");
+            //    return Page();
+            //}
 
-            if (!resp.IsSuccessStatusCode)
-            {
-                var text = await resp.Content.ReadAsStringAsync(cancellationToken);
-                _logger.LogError("Create security failed: {Text}", text);
-                ModelState.AddModelError(string.Empty, "Create failed.");
-                return Page();
-            }
+            //if (!resp.IsSuccessStatusCode)
+            //{
+            //    var text = await resp.Content.ReadAsStringAsync(cancellationToken);
+            //    _logger.LogError("Create security failed: {Text}", text);
+            //    ModelState.AddModelError(string.Empty, "Create failed.");
+            //    return Page();
+            //}
 
-            // success - redirect to refresh list and avoid repost
+            //// success - redirect to refresh list and avoid repost
             return RedirectToPage();
         }
         catch (Exception ex)

@@ -53,19 +53,19 @@
                     {
                         foreach (var stock in Model.Securities)
                         {
-                            @* var css = stock.Change >= 0 ? "text-success" : "text-danger";
+                            var css = stock.Change >= 0 ? "text-success" : "text-danger";
 
                             <tr>
                                 <td>@stock.Symbol</td>
                                 <td>@stock.Name</td>
-                                <td class="text-end">@stock.LastPrice.ToString("N2")</td>
+                                <td class="text-end">@stock.LastPrice?.ToString("N2")</td>
                                 <td class="text-end @css">
-                                    @stock.Change.ToString("N2")
+                                    @stock.Change?.ToString("N2")
                                 </td>
                                 <td class="text-end @css">
-                                    @stock.ChangePercent.ToString("N2")%
+                                    @stock.ChangePercent?.ToString("N2")%
                                 </td>
-                            </tr> *@
+                            </tr>
                         }
                     }
                 </tbody>

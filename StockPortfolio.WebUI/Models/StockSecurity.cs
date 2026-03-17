@@ -4,7 +4,11 @@ namespace StockPortfolio.WebUI.Models;
 
 public class StockSecurity
 {
-    private StockSecurity(string? symbol, string? name, string? exchange, string? securityType, string? currency)
+    public StockSecurity()
+    {
+
+    }
+    public StockSecurity(string? symbol, string? name, string? exchange, string? securityType, string? currency)
     {
         Symbol = symbol;
         Name = name;
@@ -14,7 +18,7 @@ public class StockSecurity
     }
     public static StockSecurity Create(string? symbol, string? name, string? exchange, string? securityType, string? currency)
     {
-        return new StockSecurity(symbol, name, exchange, securityType, currency);        
+        return new StockSecurity(symbol, name, exchange, securityType, currency);
     }
 
     [JsonPropertyName("Symbol")]
@@ -26,6 +30,9 @@ public class StockSecurity
     public string? Exchange { get; set; }
 
     public string? SecurityType { get; set; }
-
     public string? Currency { get; set; }
+
+    public decimal? LastPrice { get; set; }
+    public decimal? Change { get; set; }
+    public decimal? ChangePercent { get; set; }
 }
