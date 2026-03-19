@@ -5,11 +5,11 @@ namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 
 public sealed record NewsSentimentRequest(string Symbol);
 public sealed record NewsSentimentResponse(string Symbol);
-public class NewsSentimentHandler
+public class NewsSentimentStockApiHandler
 {
     private readonly IStockApiClient _alphaVantageApiClient;
 
-    public NewsSentimentHandler(IStockApiClient alphaVantageApiClient)
+    public NewsSentimentStockApiHandler(IStockApiClient alphaVantageApiClient)
     {
         _alphaVantageApiClient = alphaVantageApiClient;
     }

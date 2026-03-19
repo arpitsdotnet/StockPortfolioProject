@@ -15,7 +15,7 @@ namespace StockPortfolio.API.Controllers;
 public class SecurityApiController : ControllerBase
 {
     private readonly ILogger<SecurityApiController> _logger;
-    private readonly TimeSeriesDailyHandler _symbolSearchHandler;
+    private readonly TimeSeriesDailyStockApiHandler _symbolSearchHandler;
     private readonly ApplicationDbContext _context;
     private readonly CreateSecurityHandler _createSecurityHandler;
     private readonly DeleteSecurityHandler _deleteSecurityHandler;
@@ -23,7 +23,7 @@ public class SecurityApiController : ControllerBase
 
     public SecurityApiController(
         ILogger<SecurityApiController> logger,
-        TimeSeriesDailyHandler symbolSearchHandler,
+        TimeSeriesDailyStockApiHandler symbolSearchHandler,
         ApplicationDbContext context,
         CreateSecurityHandler createSecurityHandler,
         DeleteSecurityHandler deleteSecurityHandler,

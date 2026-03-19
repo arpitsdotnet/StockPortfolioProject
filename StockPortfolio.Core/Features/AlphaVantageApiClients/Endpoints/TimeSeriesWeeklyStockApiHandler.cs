@@ -8,7 +8,7 @@ namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 public sealed record TimeSeriesWeeklyRequest(string Symbol, string Month);
 public sealed record TimeSeriesWeeklyResponse(string SeriesDateTime, decimal Open, decimal High, decimal Low, decimal Close, long Volumne);
 
-public class TimeSeriesWeeklyHandler(IStockApiClient stockApiClient)
+public class TimeSeriesWeeklyStockApiHandler(IStockApiClient stockApiClient)
 {
     public async Task<Result<List<TimeSeriesWeeklyResponse>>> Handle(TimeSeriesWeeklyRequest request, CancellationToken cancellationToken)
     {

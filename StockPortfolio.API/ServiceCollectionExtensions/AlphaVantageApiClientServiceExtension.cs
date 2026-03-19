@@ -11,15 +11,15 @@ public static class AlphaVantageApiClientServiceExtension
     {
         services.AddScoped<IStockApiClient, AlphaVantageApiClientService>();
 
-        services.AddTransient<InsiderTransactionsHandler>();
-        services.AddTransient<NewsSentimentHandler>();
-        services.AddTransient<OverviewHandler>();
-        services.AddTransient<SymbolSearchHandler>();
+        services.AddTransient<InsiderTransactionsStockApiHandler>();
+        services.AddTransient<NewsSentimentStockApiHandler>();
+        services.AddTransient<OverviewStockApiHandler>();
+        services.AddTransient<SymbolSearchStockApiHandler>();
 
-        services.AddTransient<TimeSeriesIntradayHandler>();
-        services.AddTransient<TimeSeriesDailyHandler>();
-        services.AddTransient<TimeSeriesMonthlyHandler>();
-        services.AddTransient<TimeSeriesWeeklyHandler>();
+        services.AddTransient<TimeSeriesIntradayStockApiHandler>();
+        services.AddTransient<TimeSeriesDailyStockApiHandler>();
+        services.AddTransient<TimeSeriesMonthlyStockApiHandler>();
+        services.AddTransient<TimeSeriesWeeklyStockApiHandler>();
 
         // Securities handlers
         services.AddTransient<DeleteSecurityHandler>();

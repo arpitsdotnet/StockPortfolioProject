@@ -10,11 +10,11 @@ namespace StockPortfolio.WebUI.Pages.Stocks;
 public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
-    private readonly SecurityServices _securityServices;
+    private readonly SecurityService _securityServices;
 
     public IndexModel(
         ILogger<IndexModel> logger,
-        SecurityServices securityServices)
+        SecurityService securityServices)
     {
         _logger = logger;
         _securityServices = securityServices;

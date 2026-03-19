@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-using Microsoft.EntityFrameworkCore;
-using StockPortfolio.Core.Services.DbContexts;
-using StockPortfolio.Core.Features.SharePrices;
-using StockPortfolio.Core.Features.Securities.Domain.Models;
-using StockPortfolio.Core.Features.SharePrices.Domain.Models;
-using StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
-using StockPortfolio.Core.Contracts;
-using StockPortfolio.Core.BaseModels;
 using System.Threading;
-using StockPortfolio.Core.UnitTests.TestHelpers;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using StockPortfolio.Core.BaseModels;
+using StockPortfolio.Core.Contracts;
+using StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 using StockPortfolio.Core.Features.AlphaVantageApiClients.Models;
+using StockPortfolio.Core.Features.Securities.CreateSecurity;
+using StockPortfolio.Core.Features.Securities.Domain.Models;
+using StockPortfolio.Core.Features.SharePrices;
+using StockPortfolio.Core.Features.SharePrices.Domain.Models;
 using StockPortfolio.Core.Features.SharePrices.UpdateSharePrice;
+using StockPortfolio.Core.Services.DbContexts;
+using StockPortfolio.Core.UnitTests.TestHelpers;
+using Xunit;
 
 namespace StockPortfolio.Core.UnitTests.SharePrices;
 
@@ -33,7 +34,7 @@ public class FetchAndStoreSharePricesHandlerTests
         await context.SaveChangesAsync();
 
         // prepare fake daily body
-        var body = new TimeSeriesDailyHandler.TimeSeriesDailyResponse_Body
+        var body = new TimeSeriesDailyStockApiHandler.TimeSeriesDailyResponse_Body
         {
             MetaData = new TimeSeries_MetaDataResponse { TimeZone = "UTC" },
             TimeSeriesDaily = new Dictionary<string, TimeSeries_ItemResponse>
@@ -42,12 +43,15 @@ public class FetchAndStoreSharePricesHandlerTests
             }
         };
 
-        var fakeClient = new FakeStockApiClient((t) => t == typeof(TimeSeriesDailyHandler.TimeSeriesDailyResponse_Body) ? (object)body : null);
-        var realDailyHandler = new TimeSeriesDailyHandler(fakeClient);
+        var fakeClient = new FakeStockApiClient((t) => t == typeof(TimeSeriesDailyStockApiHandler.TimeSeriesDailyResponse_Body) ? (object)body : null);
+        var fakeDailyHandler = new TimeSeriesDailyStockApiHandler(fakeClient);
 
-        var handler = new FetchAndStoreSharePricesHandler(context, realDailyHandler);
+        var fakeCreateRequest = new CreateSecurityHandler(context);
 
-        var request = new FetchAndStoreSharePricesRequest(sec.SecurityId, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1));
+        var handler = new FetchAndStoreSharePricesHandler(context, fakeDailyHandler, fakeCreateRequest);
+
+        var request = new FetchAndStoreSharePricesRequest(sec.Symbol, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1),
+            sec.Name, sec.Exchange, sec.SecurityType, sec.Currency, sec.ISIN, sec.Sector, sec.Industry);
 
         Result<List<SharePriceHistory>> result = await handler.Handle(request, CancellationToken.None);
 

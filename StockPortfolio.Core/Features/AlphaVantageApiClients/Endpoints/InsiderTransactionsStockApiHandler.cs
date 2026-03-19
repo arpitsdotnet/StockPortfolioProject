@@ -6,11 +6,11 @@ namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 
 public sealed record InsiderTransactionsRequest(string Symbol);
 public sealed record InsiderTransactionsResponse(string Symbol);
-public class InsiderTransactionsHandler
+public class InsiderTransactionsStockApiHandler
 {
     private readonly IStockApiClient _stockApiClient;
 
-    public InsiderTransactionsHandler(IStockApiClient stockApiClient)
+    public InsiderTransactionsStockApiHandler(IStockApiClient stockApiClient)
     {
         _stockApiClient = stockApiClient;
     }

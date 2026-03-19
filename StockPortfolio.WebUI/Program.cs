@@ -11,7 +11,7 @@ builder.Services.AddHttpClient<IStockPortfolioApiClient, StockPortfolioApiClient
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddTransient<SecurityServices>();
+builder.Services.AddTransient<SecurityService>();
 
 var app = builder.Build();
 

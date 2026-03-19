@@ -15,18 +15,18 @@ public class AlphaVantageHandlersTests
     [Fact]
     public async Task SymbolSearchHandler_ReturnsParsedList()
     {
-        var bestMatches = new SymbolSearchHandler.SymbolSearchResponse_BestMatches
+        var bestMatches = new SymbolSearchStockApiHandler.SymbolSearchResponse_BestMatches
         {
-            DataList = new List<SymbolSearchHandler.SymbolSearchResponse_BestMatches_Data>
+            DataList = new List<SymbolSearchStockApiHandler.SymbolSearchResponse_BestMatches_Data>
             {
-                new SymbolSearchHandler.SymbolSearchResponse_BestMatches_Data { Symbol = "TST", Name = "Test Co", Region = "NASDAQ", Type = "Equity", Currency = "USD" }
+                new SymbolSearchStockApiHandler.SymbolSearchResponse_BestMatches_Data { Symbol = "TST", Name = "Test Co", Region = "NASDAQ", Type = "Equity", Currency = "USD" }
             }
         };
 
         var client = new FakeStockApiClient(
-            (Type t) => t == typeof(SymbolSearchHandler.SymbolSearchResponse_BestMatches) 
+            (Type t) => t == typeof(SymbolSearchStockApiHandler.SymbolSearchResponse_BestMatches) 
             ? (object?)bestMatches : null);
-        var handler = new SymbolSearchHandler(client);
+        var handler = new SymbolSearchStockApiHandler(client);
 
         var res = await handler.Handle(new SymbolSearchRequest("test"), CancellationToken.None);
 
@@ -38,7 +38,7 @@ public class AlphaVantageHandlersTests
     [Fact]
     public async Task TimeSeriesDailyHandler_ParsesDaily()
     {
-        var body = new TimeSeriesDailyHandler.TimeSeriesDailyResponse_Body
+        var body = new TimeSeriesDailyStockApiHandler.TimeSeriesDailyResponse_Body
         {
             MetaData = new TimeSeries_MetaDataResponse { TimeZone = "UTC" },
             TimeSeriesDaily = new Dictionary<string, TimeSeries_ItemResponse>
@@ -47,8 +47,8 @@ public class AlphaVantageHandlersTests
             }
         };
 
-        var client = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesDailyHandler.TimeSeriesDailyResponse_Body) ? (object?)body : null);
-        var handler = new TimeSeriesDailyHandler(client);
+        var client = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesDailyStockApiHandler.TimeSeriesDailyResponse_Body) ? (object?)body : null);
+        var handler = new TimeSeriesDailyStockApiHandler(client);
 
         var res = await handler.Handle(new TimeSeriesDailyRequest("TST"), CancellationToken.None);
 
@@ -59,7 +59,7 @@ public class AlphaVantageHandlersTests
     [Fact]
     public async Task TimeSeriesIntradayHandler_ParsesIntraday()
     {
-        var body = new TimeSeriesIntradayHandler.TimeSeriesIntradayResponse_Body
+        var body = new TimeSeriesIntradayStockApiHandler.TimeSeriesIntradayResponse_Body
         {
             MetaData = new TimeSeries_MetaDataResponse { Interval = "1min" },
             TimeSeries1min = new Dictionary<string, TimeSeries_ItemResponse>
@@ -68,8 +68,8 @@ public class AlphaVantageHandlersTests
             }
         };
 
-        var client = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesIntradayHandler.TimeSeriesIntradayResponse_Body) ? (object?)body : null);
-        var handler = new TimeSeriesIntradayHandler(client);
+        var client = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesIntradayStockApiHandler.TimeSeriesIntradayResponse_Body) ? (object?)body : null);
+        var handler = new TimeSeriesIntradayStockApiHandler(client);
 
         var res = await handler.Handle(new TimeSeriesIntradayRequest("TST", "1min"), CancellationToken.None);
 
@@ -80,7 +80,7 @@ public class AlphaVantageHandlersTests
     [Fact]
     public async Task TimeSeriesWeeklyHandler_ParsesWeekly()
     {
-        var body = new TimeSeriesWeeklyHandler.TimeSeriesWeeklyResponse_Body
+        var body = new TimeSeriesWeeklyStockApiHandler.TimeSeriesWeeklyResponse_Body
         {
             MetaData = new TimeSeries_MetaDataResponse { TimeZone = "UTC" },
             TimeSeriesWeekly = new Dictionary<string, TimeSeries_ItemResponse>
@@ -89,8 +89,8 @@ public class AlphaVantageHandlersTests
             }
         };
 
-        var client = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesWeeklyHandler.TimeSeriesWeeklyResponse_Body) ? (object?)body : null);
-        var handler = new TimeSeriesWeeklyHandler(client);
+        var client = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesWeeklyStockApiHandler.TimeSeriesWeeklyResponse_Body) ? (object?)body : null);
+        var handler = new TimeSeriesWeeklyStockApiHandler(client);
 
         var res = await handler.Handle(new TimeSeriesWeeklyRequest("TST", ""), CancellationToken.None);
 
@@ -101,7 +101,7 @@ public class AlphaVantageHandlersTests
     [Fact]
     public async Task TimeSeriesMonthlyHandler_ParsesMonthly()
     {
-        var body = new TimeSeriesMonthlyHandler.TimeSeriesMonthlyResponse_Body
+        var body = new TimeSeriesMonthlyStockApiHandler.TimeSeriesMonthlyResponse_Body
         {
             MetaData = new TimeSeries_MetaDataResponse { TimeZone = "UTC" },
             TimeSeriesMonthly = new Dictionary<string, TimeSeries_ItemResponse>
@@ -110,8 +110,8 @@ public class AlphaVantageHandlersTests
             }
         };
 
-        var client = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesMonthlyHandler.TimeSeriesMonthlyResponse_Body) ? (object?)body : null);
-        var handler = new TimeSeriesMonthlyHandler(client);
+        var client = new FakeStockApiClient((Type t) => t == typeof(TimeSeriesMonthlyStockApiHandler.TimeSeriesMonthlyResponse_Body) ? (object?)body : null);
+        var handler = new TimeSeriesMonthlyStockApiHandler(client);
 
         var res = await handler.Handle(new TimeSeriesMonthlyRequest("TST",""), CancellationToken.None);
 
@@ -124,7 +124,7 @@ public class AlphaVantageHandlersTests
     {
         var overview = new OverviewResponse("TST");
         var client = new FakeStockApiClient((Type t) => t == typeof(OverviewResponse) ? (object?)overview : null);
-        var handler = new OverviewHandler(client);
+        var handler = new OverviewStockApiHandler(client);
 
         var res = await handler.Handle(new OverviewRequest("TST"), CancellationToken.None);
 
@@ -137,7 +137,7 @@ public class AlphaVantageHandlersTests
     {
         var ns = new NewsSentimentResponse("TST");
         var client = new FakeStockApiClient((Type t) => t == typeof(NewsSentimentResponse) ? (object?)ns : null);
-        var handler = new NewsSentimentHandler(client);
+        var handler = new NewsSentimentStockApiHandler(client);
 
         var res = await handler.Handle(new NewsSentimentRequest("TST"), CancellationToken.None);
 
@@ -150,7 +150,7 @@ public class AlphaVantageHandlersTests
     {
         var it = new InsiderTransactionsResponse("TST");
         var client = new FakeStockApiClient((Type t) => t == typeof(InsiderTransactionsResponse) ? (object?)it : null);
-        var handler = new InsiderTransactionsHandler(client);
+        var handler = new InsiderTransactionsStockApiHandler(client);
 
         var res = await handler.Handle(new InsiderTransactionsRequest("TST"), CancellationToken.None);
 

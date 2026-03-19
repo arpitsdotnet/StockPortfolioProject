@@ -8,11 +8,11 @@ namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 public sealed record TimeSeriesIntradayRequest(string Symbol, string Interval, string Month = "");
 public sealed record TimeSeriesIntradayResponse(string SeriesDateTime, decimal Open, decimal High, decimal Low, decimal Close, long Volumne);
 
-public class TimeSeriesIntradayHandler
+public class TimeSeriesIntradayStockApiHandler
 {
     private readonly IStockApiClient _stockApiClient;
 
-    public TimeSeriesIntradayHandler(IStockApiClient stockApiClient)
+    public TimeSeriesIntradayStockApiHandler(IStockApiClient stockApiClient)
     {
         _stockApiClient = stockApiClient;
     }

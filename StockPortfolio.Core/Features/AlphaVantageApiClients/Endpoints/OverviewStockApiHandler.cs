@@ -5,11 +5,11 @@ namespace StockPortfolio.Core.Features.AlphaVantageApiClients.Endpoints;
 
 public sealed record OverviewRequest(string Symbol);
 public sealed record OverviewResponse(string Symbol);
-public class OverviewHandler
+public class OverviewStockApiHandler
 {
     private readonly IStockApiClient _stockApiClient;
 
-    public OverviewHandler(IStockApiClient stockApiClient)
+    public OverviewStockApiHandler(IStockApiClient stockApiClient)
     {
         _stockApiClient = stockApiClient;
     }
