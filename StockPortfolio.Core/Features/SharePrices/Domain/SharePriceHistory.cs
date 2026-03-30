@@ -6,7 +6,7 @@ namespace StockPortfolio.Core.Features.SharePrices.Domain.Models;
 public class SharePriceHistory : BaseDomain
 {
     [Key]
-    public int SharePriceHistoryId { get; set; }
+    public long SharePriceHistoryId { get; set; }
 
     public int SecurityId { get; set; }
 

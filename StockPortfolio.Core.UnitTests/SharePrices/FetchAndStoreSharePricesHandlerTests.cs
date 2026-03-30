@@ -27,11 +27,11 @@ public class FetchAndStoreSharePricesHandlerTests
             .UseInMemoryDatabase("TestDb_FetchPrices")
             .Options;
 
-        await using var context = new ApplicationDbContext(options);
+        await using var fakeContext = new ApplicationDbContext(options);
         // seed security
         var sec = new Security { Symbol = "TST", Name = "Test Co", IsActive = true, CreatedOn = DateTime.UtcNow, CreatedById = 0, LastModifiedOn = DateTime.UtcNow, LastModifiedById = 0 };
-        await context.Securities.AddAsync(sec);
-        await context.SaveChangesAsync();
+        await fakeContext.Securities.AddAsync(sec);
+        await fakeContext.SaveChangesAsync();
 
         // prepare fake daily body
         var body = new TimeSeriesDailyStockApiHandler.TimeSeriesDailyResponse_Body
@@ -46,9 +46,9 @@ public class FetchAndStoreSharePricesHandlerTests
         var fakeClient = new FakeStockApiClient((t) => t == typeof(TimeSeriesDailyStockApiHandler.TimeSeriesDailyResponse_Body) ? (object)body : null);
         var fakeDailyHandler = new TimeSeriesDailyStockApiHandler(fakeClient);
 
-        var fakeCreateRequest = new CreateSecurityHandler(context);
+        var fakeCreateRequest = new CreateSecurityHandler(fakeContext);
 
-        var handler = new FetchAndStoreSharePricesHandler(context, fakeDailyHandler, fakeCreateRequest);
+        var handler = new FetchAndStoreSharePricesHandler(fakeContext, fakeDailyHandler, fakeCreateRequest);
 
         var request = new FetchAndStoreSharePricesRequest(sec.Symbol, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1),
             sec.Name, sec.Exchange, sec.SecurityType, sec.Currency, sec.ISIN, sec.Sector, sec.Industry);
@@ -58,7 +58,7 @@ public class FetchAndStoreSharePricesHandlerTests
         Assert.True(result.IsSuccess);
         Assert.Single(result.Value);
 
-        var stored = await context.SharePriceHistories.FirstOrDefaultAsync();
+        var stored = await fakeContext.SharePriceHistories.FirstOrDefaultAsync();
         Assert.NotNull(stored);
         Assert.Equal(11, stored.Close);
     }
