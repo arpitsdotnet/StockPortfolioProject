@@ -12,27 +12,13 @@ namespace StockPortfolio.API.Controllers;
 /// <summary>Handles API endpoints for share price management and external data synchronization.</summary>
 [ApiController]
 [Route("api/[controller]")]
-public class SharePricesController : ControllerBase
+public class SharePricesController(
+    FetchAndStoreSharePricesHandler fetchHandler,
+    CreateSharePriceHandler createHandler,
+    DeleteSharePriceHandler deleteHandler,
+    GetSharePricesHandler getHandler,
+    GetLatestSharePriceHandler getLatestHandler) : ControllerBase
 {
-    private readonly FetchAndStoreSharePricesHandler _fetchHandler;
-    private readonly CreateSharePriceHandler _createHandler;
-    private readonly DeleteSharePriceHandler _deleteHandler;
-    private readonly GetSharePricesHandler _getHandler;
-    private readonly GetLatestSharePriceHandler _getLatestHandler;
-
-    public SharePricesController(
-        FetchAndStoreSharePricesHandler fetchHandler,
-        CreateSharePriceHandler createHandler,
-        DeleteSharePriceHandler deleteHandler,
-        GetSharePricesHandler getHandler,
-        GetLatestSharePriceHandler getLatestHandler)
-    {
-        _fetchHandler = fetchHandler;
-        _createHandler = createHandler;
-        _deleteHandler = deleteHandler;
-        _getHandler = getHandler;
-        _getLatestHandler = getLatestHandler;
-    }
 
     /// <summary>Fetches share price data from external API and stores in database.</summary>
     [HttpPost("fetch")]
@@ -43,7 +29,7 @@ public class SharePricesController : ControllerBase
                 .Failure(new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request required"))
                 .ToActionResult();
 
-        var result = await _fetchHandler.Handle(request, cancellationToken);
+        var result = await fetchHandler.Handle(request, cancellationToken);
         return result.IsSuccess
             ? result.ToOkResult()
             : result.ToActionResult();
@@ -58,7 +44,7 @@ public class SharePricesController : ControllerBase
                 .Failure(new Error(ErrorType.VALIDATION, ErrorCode.BAD_REQUEST, "Request body is required"))
                 .ToActionResult();
 
-        var result = await _createHandler.Handle(request, cancellationToken);
+        var result = await createHandler.Handle(request, cancellationToken);
         return result.IsSuccess
             ? result.ToCreatedAtActionResult(this, nameof(GetBySecurity), new { securityId = request.SecurityId })
             : result.ToActionResult();
@@ -69,7 +55,7 @@ public class SharePricesController : ControllerBase
     public async Task<IActionResult> GetBySecurity(int securityId, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, CancellationToken cancellationToken)
     {
         var request = new GetSharePricesRequest(securityId, fromDate, toDate);
-        var result = await _getHandler.Handle(request, cancellationToken);
+        var result = await getHandler.Handle(request, cancellationToken);
         return result.IsSuccess
             ? result.ToOkResult()
             : result.ToActionResult();
@@ -80,17 +66,17 @@ public class SharePricesController : ControllerBase
     public async Task<IActionResult> GetLatest(int securityId, CancellationToken cancellationToken)
     {
         var request = new GetLatestSharePriceRequest(securityId);
-        var result = await _getLatestHandler.Handle(request, cancellationToken);
+        var result = await getLatestHandler.Handle(request, cancellationToken);
         return result.IsSuccess
             ? result.ToOkResult()
             : result.ToActionResult();
     }
 
     /// <summary>Deletes a share price record by ID.</summary>
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    [HttpDelete("{securityId:int}")]
+    public async Task<IActionResult> Delete(int securityId, CancellationToken cancellationToken)
     {
-        var result = await _deleteHandler.Handle(new DeleteSharePriceRequest(id), cancellationToken);
+        var result = await deleteHandler.Handle(new DeleteSharePriceRequest(securityId), cancellationToken);
         return result.IsSuccess
             ? Ok(new ResultDto<object> { IsSuccess = true, Value = result.Value, Message = "Deleted" })
             : result.ToActionResult();

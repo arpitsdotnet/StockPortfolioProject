@@ -6,7 +6,7 @@ using StockPortfolio.Core.Services.DbContexts;
 namespace StockPortfolio.Core.Features.SharePrices.CreateSharePrice;
 
 public sealed record CreateSharePriceRequest(int SecurityId, DateTime SeriesDate, decimal Open, decimal High, decimal Low, decimal Close, long Volume);
-public sealed record CreateSharePriceResponse(int SharePriceHistoryId);
+public sealed record CreateSharePriceResponse(long SharePriceHistoryId);
 
 public class CreateSharePriceHandler
 {

@@ -6,7 +6,7 @@ using StockPortfolio.Core.Services.DbContexts;
 namespace StockPortfolio.Core.Features.SharePrices.GetLatestSharePrice;
 
 public sealed record GetLatestSharePriceRequest(int SecurityId);
-public sealed record GetLatestSharePriceResponse(int SharePriceHistoryId, DateTime SeriesDate, decimal Open, decimal High, decimal Low, decimal Close, long Volume);
+public sealed record GetLatestSharePriceResponse(long SharePriceHistoryId, DateTime SeriesDate, decimal Open, decimal High, decimal Low, decimal Close, long Volume);
 
 public class GetLatestSharePriceHandler
 {
