@@ -12,7 +12,7 @@ public class SecurityService(IStockPortfolioApiClient client)
     public async Task<IReadOnlyList<StockSecurity>> SearchSecurityAsync(PageSetting pageSetting, string keyword, CancellationToken cancellationToken)
     {
         // Example endpoint – replace with real API
-        string requestUri = $"{BASE_ENDPOINT}?keyword={keyword}&page={pageSetting.Page}&pageSize={pageSetting.PageSize}";
+        string requestUri = $"{BASE_ENDPOINT}?keyword={keyword}&page={pageSetting.PageNum}&pageSize={pageSetting.PageSize}";
 
         var response = await _client.GetAsync<List<StockSecurity>>(requestUri, cancellationToken);
 

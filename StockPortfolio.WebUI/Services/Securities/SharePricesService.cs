@@ -12,7 +12,7 @@ public class SharePricesService(IStockPortfolioApiClient client)
     public async Task<IReadOnlyList<SharePrice>> GetSharePricesAsync(PageSetting pageSetting, string keyword, string fromDateString, string toDateString, CancellationToken cancellationToken)
     {
         // Example endpoint – replace with real API
-        string requestUri = $"{BASE_ENDPOINT}?keyword={keyword}&fromDateString={fromDateString}&toDateString={toDateString}&page={pageSetting.Page}&pageSize={pageSetting.PageSize}";
+        string requestUri = $"{BASE_ENDPOINT}?keyword={keyword}&fromDateString={fromDateString}&toDateString={toDateString}&page={pageSetting.PageNum}&pageSize={pageSetting.PageSize}";
 
         var response = await _client.GetAsync<List<SharePrice>>(requestUri, cancellationToken);
 

@@ -124,7 +124,7 @@ public class IndexModel : PageModel
 
         try
         {
-            //var resp = null; // await _securityServices.CreateSecurityAsync("/api/Security", payload, cancellationToken);
+            //var resp = await _securityServices.CreateSecurityAsync(payload, cancellationToken);
 
             //if (resp.StatusCode == System.Net.HttpStatusCode.Conflict)
             //{
